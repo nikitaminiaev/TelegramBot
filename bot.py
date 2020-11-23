@@ -33,7 +33,7 @@ async def process_help_command(message: types.Message):
 async def say(message: types.Message):
     if message.text in mapping:
         await message.answer(mapping[message.text])
-    await message.answer(message.text)
+    await bot.send_message(message.chat.id, message.text)
 
 
 if __name__ == '__main__':
