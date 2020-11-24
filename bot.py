@@ -63,7 +63,7 @@ async def callback_inline(call):
                                         reply_markup=None)
 
             await bot.answer_callback_query(callback_query_id=call.id, show_alert=False,
-                                            text="ЭТО ТЕСТОВОЕ УВЕДОМЛЕНИЕ!!11")
+                                            text="ЭТО ТЕСТОВОЕ УВЕДОМЛЕНИЕ!")
 
     except Exception as e:
         print(repr(e))
