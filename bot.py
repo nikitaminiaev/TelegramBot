@@ -16,15 +16,15 @@ dp = Dispatcher(bot)
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton('Рандом')
-    item2 = types.KeyboardButton('Как дела?')
+    item1 = types.KeyboardButton('Нанотех')
+    item2 = types.KeyboardButton('ИИ')
     markup.add(item1, item2)
 
     await bot.send_message(message.chat.id,
-                           "Добро пожаловать, {0.first_name}!\nЯ - <b>{1}</b>, бот.".format(message.from_user,
+                           "Добро пожаловать, {0.first_name}!\nЯ - <b>{1}</b>, бот-парсер новостных сайтов по темам.".format(message.from_user,
                                                                                             bot.get('first_name')),
                            parse_mode='html', reply_markup=markup)
-
+    await bot.send_message(message.chat.id, 'Выберите категории которые хотите отслеживать')
 
 @dp.message_handler(commands=['help'])
 async def process_help_command(message: types.Message):
@@ -34,10 +34,10 @@ async def process_help_command(message: types.Message):
 @dp.message_handler()
 async def say(message: types.Message):
     if message.chat.type == 'private':
-        if message.text == 'Рандом':
-            await bot.send_message(message.chat.id, str(random.randint(0, 100)))
-        elif message.text == 'Как дела?':
-
+        if message.text == 'Нанотех':
+            await bot.send_message(message.chat.id,'отслеживаемые сайты:')
+            # await bot.send_message(message.chat.id, str(random.randint(0, 100)))
+        elif message.text == 'ИИ':
             markup = types.InlineKeyboardMarkup(row_width=2)
             item1 = types.InlineKeyboardButton("Хорошо", callback_data='good')
             item2 = types.InlineKeyboardButton("Не очень", callback_data='bad')
