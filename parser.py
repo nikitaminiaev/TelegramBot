@@ -12,7 +12,7 @@ class Parser:
     def __get_html(self, url, params=None):
         return requests.get(url, headers=Parser.HEADERS, params=params)
 
-    def __get_content(self, html: str, tag='', html_class=''):
+    def __get_content(self, html: str, tag: str = '', html_class: str = ''):
         soup = BeautifulSoup(html, 'html.parser')
         return soup.find_all(tag, class_=html_class)[00]
 
