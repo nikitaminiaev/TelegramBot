@@ -1,6 +1,6 @@
 import os
 import aiohttp
-import random
+from parser import Parser
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, executor, types
 
@@ -21,10 +21,12 @@ async def process_start_command(message: types.Message):
     markup.add(item1, item2)
 
     await bot.send_message(message.chat.id,
-                           "Добро пожаловать, {0.first_name}!\nЯ - <b>{1}</b>, бот-парсер новостных сайтов по темам.".format(message.from_user,
-                                                                                            bot.get('first_name')),
+                           "Добро пожаловать, {0.first_name}!\nЯ - <b>{1}</b>, бот-парсер новостных сайтов по темам.".format(
+                               message.from_user,
+                               bot.get('first_name')),
                            parse_mode='html', reply_markup=markup)
     await bot.send_message(message.chat.id, 'Выберите категории которые хотите отслеживать')
+
 
 @dp.message_handler(commands=['help'])
 async def process_help_command(message: types.Message):
@@ -33,18 +35,23 @@ async def process_help_command(message: types.Message):
 
 @dp.message_handler()
 async def say(message: types.Message):
+    parser = Parser()
     if message.chat.type == 'private':
         if message.text == 'Нанотех':
-            await bot.send_message(message.chat.id,'отслеживаемые сайты:')
+            await bot.send_message(message.chat.id, 'отслеживаемые страницы: ' + '\n' + Parser.URL_MECHATRONICS + '\n')
+            await bot.send_message(message.chat.id, 'последняя новость: ' + '\n' + parser.parse_mechatronics() + '\n')
             # await bot.send_message(message.chat.id, str(random.randint(0, 100)))
+            item = types.InlineKeyboardButton("Прекратить отслеживаение", callback_data='stop')
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            markup.add(item)
         elif message.text == 'ИИ':
-            markup = types.InlineKeyboardMarkup(row_width=2)
-            item1 = types.InlineKeyboardButton("Хорошо", callback_data='good')
-            item2 = types.InlineKeyboardButton("Не очень", callback_data='bad')
-
-            markup.add(item1, item2)
-
-            await bot.send_message(message.chat.id, 'Отлично, сам как?', reply_markup=markup)
+            await bot.send_message(message.chat.id, 'отслеживаемые страницы: ' + '\n' + Parser.URL_GOOGLE_BLOG + '\n')
+            await bot.send_message(message.chat.id, 'последняя новость: ' + '\n' + parser.parse_google_blog() + '\n')
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            item = types.InlineKeyboardButton("Прекратить отслеживаение", callback_data='stop')
+            # item2 = types.InlineKeyboardButton("Не очень", callback_data='bad')
+            markup.add(item)
+            # await bot.send_message(message.chat.id, 'Отлично, сам как?', reply_markup=markup)
         else:
             await bot.send_message(message.chat.id, 'Я не знаю что ответить 😢')
 
