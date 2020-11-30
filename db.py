@@ -18,6 +18,10 @@ def insert(table: str, column_values: Dict):
         values)
     conn.commit()
 
+def isset_user(id):
+    cursor.execute(f"SELECT id FROM users WHERE id = {id}")
+    return bool(len(cursor.fetchall()))
 
 if __name__ == '__main__':
-    insert('users', {'id': 532510956})
+    # insert('users', {'id': 532510956})
+    isset_user(532510956)

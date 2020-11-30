@@ -26,7 +26,8 @@ async def process_start_command(message: types.Message):
                                bot.get('first_name')),
                            parse_mode='html', reply_markup=markup)
     await bot.send_message(message.chat.id, message.from_user.id)
-    db.insert('users', {'id': message.from_user.id})
+    if not db.isset_user(message.from_user.id):
+        db.insert('users', {'id': message.from_user.id})
     await bot.send_message(message.chat.id, 'Выберите категории которые хотите отслеживать')
 
 
