@@ -1,4 +1,5 @@
-create table budget(
-    codename varchar(255) primary key,
-    daily_limit integer
+create table users(
+    id integer primary key,
+    name varchar(255),
+    subscriptions varchar(255)
 );

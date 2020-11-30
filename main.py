@@ -1,5 +1,5 @@
 import os
-import aiohttp
+import db
 from parser import Parser
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, executor, types
@@ -25,6 +25,8 @@ async def process_start_command(message: types.Message):
                                message.from_user,
                                bot.get('first_name')),
                            parse_mode='html', reply_markup=markup)
+    await bot.send_message(message.chat.id, message.from_user.id)
+    db.insert('users', {'id': message.from_user.id})
     await bot.send_message(message.chat.id, 'Выберите категории которые хотите отслеживать')
 
 
