@@ -27,7 +27,7 @@ async def process_start_command(message: types.Message):
                            parse_mode='html', reply_markup=markup)
     await bot.send_message(message.chat.id, message.from_user.id)
     if not db.isset_user(message.from_user.id):
-        db.insert('users', {'id': message.from_user.id})
+        db.insert('users', {'id': message.from_user.id, 'name': message.from_user.first_name})
     await bot.send_message(message.chat.id, 'Выберите категории которые хотите отслеживать')
 
 
@@ -41,6 +41,7 @@ async def say(message: types.Message):
     parser = Parser()
     if message.chat.type == 'private':
         if message.text == 'Нанотех':
+
             await method_name(message, Parser.URL_MECHATRONICS, parser.parse_mechatronics)
         elif message.text == 'ИИ':
             await method_name(message, Parser.URL_GOOGLE_BLOG, parser.parse_google_blog)

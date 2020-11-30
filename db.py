@@ -24,4 +24,4 @@ def isset_user(id):
 
 if __name__ == '__main__':
     # insert('users', {'id': 532510956})
-    isset_user(532510956)
+    print(isset_user(532510956))
