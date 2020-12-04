@@ -41,16 +41,19 @@ async def say(message: types.Message):
     parser = Parser()
     if message.chat.type == 'private':
         if message.text == 'Нанотех':
-            await method_name(message, Parser.URL_MECHATRONICS, parser.parse_mechatronics)
+            db.update('users', str(message.from_user.id), {'subscriptions_nano': 1})
+            await method_name(message, Parser.URL_MECHATRONICS, str({'subscription': 'stop_nano', 'user_id': str(message.from_user.id)}), parser.parse_mechatronics)
         elif message.text == 'ИИ':
-            await method_name(message, Parser.URL_GOOGLE_BLOG, parser.parse_google_blog)
+            db.update('users', str(message.from_user.id), {'subscriptions_ai': 1})
+            await method_name(message, Parser.URL_GOOGLE_BLOG, str({'subscription': 'stop_ai', 'user_id': str(message.from_user.id)}), parser.parse_google_blog)
         else:
-            await bot.send_message(message.chat.id, 'Я не знаю что ответить 😢')
+            await bot.send_message(message.chat.id, 'Общайтесь кнопками')
 
-
-async def method_name(message, url: str, parse_method):
+# TODO
+# сделать подписку в колбеке, как и отписку, разделить  методы. Подобрать названия метода
+async def method_name(message, url: str, callback_data: str, parse_method):
     await bot.send_message(message.chat.id, 'отслеживаемые страницы: ' + '\n' + url + '\n')
-    item = types.InlineKeyboardButton("Прекратить отслеживаение?", callback_data='stop')
+    item = types.InlineKeyboardButton("Прекратить отслеживаение?", callback_data=callback_data)
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(item)
     await bot.send_message(message.chat.id, 'последняя новость: ' + '\n' + parse_method() + '\n',
@@ -61,17 +64,19 @@ async def method_name(message, url: str, parse_method):
 async def callback_inline(call):
     try:
         if call.message:
-            if call.data == 'stop':
-                await bot.send_message(call.message.chat.id, 'Отслеживание прекращено')
-
+            call.data = eval(call.data)
+            if call.data['subscription'] == 'stop_nano':
+                db.update('users', call.data['user_id'], {'subscriptions_nano': 0})
+            elif call.data['subscription'] == 'stop_ai':
+                db.update('users', call.data['user_id'], {'subscriptions_ai': 0})
             await bot.edit_message_text(chat_id=call.message.chat.id,
                                         message_id=call.message.message_id,
-                                        text="",
+                                        text="Отслеживание прекращено",
                                         reply_markup=None)
-
-            await bot.answer_callback_query(callback_query_id=call.id,
-                                            show_alert=False,
-                                            text="ЭТО ТЕСТОВОЕ УВЕДОМЛЕНИЕ!")
+            #
+            # await bot.answer_callback_query(callback_query_id=call.id,
+            #                                 show_alert=False,
+            #                                 text="ЭТО ТЕСТОВОЕ УВЕДОМЛЕНИЕ!")
 
     except Exception as e:
         print(repr(e))

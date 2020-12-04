@@ -36,5 +36,6 @@ def isset_user(id):
 
 if __name__ == '__main__':
     # insert('users', {'id': 532510956})
-    # update('users', '532510956', {'subscriptions_nano': 1, 'subscriptions_ai': 1})
-    print(isset_user(532510956))
+    update('users', '532510956', {'subscriptions_nano': 0, 'subscriptions_ai': 0})
+    # print(isset_user(532510956))
+    # print(str(532510956))
