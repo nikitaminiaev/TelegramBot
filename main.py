@@ -41,7 +41,6 @@ async def say(message: types.Message):
     parser = Parser()
     if message.chat.type == 'private':
         if message.text == 'Нанотех':
-
             await method_name(message, Parser.URL_MECHATRONICS, parser.parse_mechatronics)
         elif message.text == 'ИИ':
             await method_name(message, Parser.URL_GOOGLE_BLOG, parser.parse_google_blog)

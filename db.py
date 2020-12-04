@@ -18,10 +18,23 @@ def insert(table: str, column_values: Dict):
         values)
     conn.commit()
 
+
+def update(table: str, id_where: str, column_values: Dict):
+    column_values_str = str(column_values).replace('{', '').replace('}', '').replace(':', '=').replace('\'', '')
+    cursor.execute(
+        f"UPDATE {table} "
+        f"SET {column_values_str} "
+        f"WHERE id = {id_where}"
+        )
+    conn.commit()
+
+
 def isset_user(id):
     cursor.execute(f"SELECT id FROM users WHERE id = {id}")
     return bool(len(cursor.fetchall()))
 
+
 if __name__ == '__main__':
     # insert('users', {'id': 532510956})
+    # update('users', '532510956', {'subscriptions_nano': 1, 'subscriptions_ai': 1})
     print(isset_user(532510956))
