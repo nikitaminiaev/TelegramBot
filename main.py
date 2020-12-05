@@ -26,7 +26,7 @@ async def process_start_command(message: types.Message):
                                bot.get('first_name')),
                            parse_mode='html',
                            reply_markup=markup)
-    if not db.isset_user(message.from_user.id):
+    if not db.isset_user(str(message.from_user.id)):
         db.insert('users', {'id': message.from_user.id, 'name': message.from_user.first_name})
     await bot.send_message(message.chat.id, 'Выберите категории которые хотите отслеживать')
 
@@ -41,25 +41,31 @@ async def say(message: types.Message):
     parser = Parser()
     if message.chat.type == 'private':
         if message.text == 'Нанотех':
-            db.update('users', str(message.from_user.id), {'subscriptions_nano': 1})
-            await method_name(message, Parser.URL_MECHATRONICS, str({'subscription': 'stop_nano', 'user_id': str(message.from_user.id)}), parser.parse_mechatronics)
+            await get_news(message, Parser.URL_MECHATRONICS,
+                           str({'subscription': 'stop_nano', 'user_id': str(message.from_user.id)}), 'nano',
+                           parser.parse_mechatronics)
         elif message.text == 'ИИ':
-            db.update('users', str(message.from_user.id), {'subscriptions_ai': 1})
-            await method_name(message, Parser.URL_GOOGLE_BLOG, str({'subscription': 'stop_ai', 'user_id': str(message.from_user.id)}), parser.parse_google_blog)
+            await get_news(message, Parser.URL_GOOGLE_BLOG,
+                           str({'subscription': 'stop_ai', 'user_id': str(message.from_user.id)}), 'ai',
+                           parser.parse_google_blog)
         else:
-            await bot.send_message(message.chat.id, 'Общайтесь кнопками')
+            await bot.send_message(message.chat.id, 'Общайся кнопками')
 
-# TODO
-# сделать подписку в колбеке, как и отписку, разделить  методы. Подобрать названия метода
-async def method_name(message, url: str, callback_data: str, parse_method):
-    await bot.send_message(message.chat.id, 'отслеживаемые страницы: ' + '\n' + url + '\n')
+
+async def get_news(message, url: str, callback_data: str, subscription: str, parse_method):
+    news = parse_method()
+    await insert_news(news, url, subscription)
+    db.update('users', str(message.from_user.id), {'subscriptions_' + subscription: 1})
     item = types.InlineKeyboardButton("Прекратить отслеживаение?", callback_data=callback_data)
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(item)
-    await bot.send_message(message.chat.id, 'последняя новость: ' + '\n' + parse_method() + '\n',
-                           reply_markup=markup)
+    await bot.send_message(message.chat.id, 'отслеживаемые страницы: ' + '\n' + url + '\n', reply_markup=markup)
+    await bot.send_message(message.chat.id, 'последняя новость: ' + '\n' + news + '\n')
 
-
+async def insert_news(news: str, link: str, type: str):
+    if db.is_news_unique(news):
+        db.insert('links', {'link': link, 'is_' + type: 1, 'data': news})
+# todo добавить в парсер параметр с количеством новостей и сделать медот проверки новостей по расписанию
 @dp.callback_query_handler(lambda call: True)
 async def callback_inline(call):
     try:

@@ -25,17 +25,24 @@ def update(table: str, id_where: str, column_values: Dict):
         f"UPDATE {table} "
         f"SET {column_values_str} "
         f"WHERE id = {id_where}"
-        )
+    )
     conn.commit()
 
 
-def isset_user(id):
+def isset_user(id: str):
     cursor.execute(f"SELECT id FROM users WHERE id = {id}")
     return bool(len(cursor.fetchall()))
 
 
+def is_news_unique(news: str):
+    cursor.execute(f"SELECT data FROM links WHERE data = '{news}'")
+    return not bool(len(cursor.fetchall()))
+
+
 if __name__ == '__main__':
     # insert('users', {'id': 532510956})
-    update('users', '532510956', {'subscriptions_nano': 0, 'subscriptions_ai': 0})
-    # print(isset_user(532510956))
+    # update('users', '532510956', {'subscriptions_nano': 0, 'subscriptions_ai': 0})
+    print(isset_user(str(532510956)))
     # print(str(532510956))
+    # insert('links', {'link': 'http://ldcn-mechatronics.net/publications/', 'is_' + 'nano': 1})
+

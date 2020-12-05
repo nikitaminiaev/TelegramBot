@@ -10,5 +10,5 @@ create table links(
     link varchar(255),
     is_nano boolean DEFAULT 0,
     is_ai boolean DEFAULT 0,
-    data varchar(255)
+    data BLOB NOT NULL UNIQUE
 );
