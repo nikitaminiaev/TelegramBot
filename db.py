@@ -3,6 +3,11 @@ from typing import Dict, List, Tuple
 
 import sqlite3
 
+EMPTY = 0
+NANO = 1
+AI = 2
+
+# todo переделать структуру таблицы
 conn = sqlite3.connect(os.path.join("db", "database.db"))
 cursor = conn.cursor()
 

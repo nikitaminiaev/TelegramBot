@@ -3,7 +3,9 @@ import db
 from parser import Parser
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, executor, types
+from apscheduler.schedulers.blocking import BlockingScheduler
 
+scheduler = BlockingScheduler()
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 
 if os.path.exists(dotenv_path):
@@ -54,7 +56,7 @@ async def say(message: types.Message):
 
 async def get_news(message, url: str, callback_data: str, subscription: str, parse_method):
     news = parse_method()
-    await insert_news(news, url, subscription)
+    await insert_news(message, news, url, subscription)
     db.update('users', str(message.from_user.id), {'subscriptions_' + subscription: 1})
     item = types.InlineKeyboardButton("Прекратить отслеживаение?", callback_data=callback_data)
     markup = types.InlineKeyboardMarkup(row_width=1)
@@ -62,10 +64,19 @@ async def get_news(message, url: str, callback_data: str, subscription: str, par
     await bot.send_message(message.chat.id, 'отслеживаемые страницы: ' + '\n' + url + '\n', reply_markup=markup)
     await bot.send_message(message.chat.id, 'последняя новость: ' + '\n' + news + '\n')
 
-async def insert_news(news: str, link: str, type: str):
+
+async def insert_news(message, news: str, link: str, type: str):
     if db.is_news_unique(news):
         db.insert('links', {'link': link, 'is_' + type: 1, 'data': news})
+        await bot.send_message(message.chat.id, 'Найдена и добавлена новая новость: ' + '\n' + news)
+
+
 # todo добавить в парсер параметр с количеством новостей и сделать медот проверки новостей по расписанию
+async def check_news(message, url: str, subscription: str, parse_method):
+    news = parse_method()
+    await insert_news(message, news, url, subscription)
+
+
 @dp.callback_query_handler(lambda call: True)
 async def callback_inline(call):
     try:
@@ -79,11 +90,6 @@ async def callback_inline(call):
                                         message_id=call.message.message_id,
                                         text="Отслеживание прекращено",
                                         reply_markup=None)
-            #
-            # await bot.answer_callback_query(callback_query_id=call.id,
-            #                                 show_alert=False,
-            #                                 text="ЭТО ТЕСТОВОЕ УВЕДОМЛЕНИЕ!")
-
     except Exception as e:
         print(repr(e))
 
