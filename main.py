@@ -33,9 +33,9 @@ async def process_start_command(message: types.Message):
     await bot.send_message(message.chat.id, 'Выберите категории которые хотите отслеживать')
 
 
-@dp.message_handler(commands=['help'])
-async def process_help_command(message: types.Message):
-    await message.reply("Напиши мне что-нибудь, и я отпрпавлю этот текст тебе в ответ!")
+# @dp.message_handler(commands=['help'])
+# async def process_help_command(message: types.Message):
+#     await message.reply("Общайся кнопками")
 
 
 @dp.message_handler()

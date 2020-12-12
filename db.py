@@ -1,6 +1,6 @@
 import os
 from typing import Dict, List, Tuple
-
+from parser import Parser
 import sqlite3
 
 EMPTY = 0
@@ -44,10 +44,22 @@ def is_news_unique(news: str):
     return not bool(len(cursor.fetchall()))
 
 
+def get_user():
+    pass
+
+
+def get_last_news():
+    pass
+
+
+def update_news(type, data):
+    link = Parser.MAPPING[type]
+    pass
+
+
 if __name__ == '__main__':
     # insert('users', {'id': 532510956})
     # update('users', '532510956', {'subscriptions_nano': 0, 'subscriptions_ai': 0})
     print(isset_user(str(532510956)))
     # print(str(532510956))
     # insert('links', {'link': 'http://ldcn-mechatronics.net/publications/', 'is_' + 'nano': 1})
-
